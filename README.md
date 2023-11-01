@@ -1,6 +1,6 @@
-### React Vite Starter - Typescript (Hỏi Dân IT)
+### React Query Starter - Typescript (Hỏi Dân IT)
 
-Template này được sử dụng cho series Redux Ultimate của tác giả Hỏi Dân IT (Eric)
+Template này được sử dụng cho series "A State Manager for React" của tác giả Hỏi Dân IT (Eric)
 
 Các bước cần làm:
 
