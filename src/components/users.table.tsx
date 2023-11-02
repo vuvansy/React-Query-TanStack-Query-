@@ -4,6 +4,7 @@ import Button from 'react-bootstrap/Button';
 import UserCreateModal from './modal/user.create.modal';
 import UserEditModal from './modal/user.edit.modal';
 import UserDeleteModal from './modal/user.delete.modal';
+import UsersPagination from './pagination/users.pagination';
 
 
 function UsersTable() {
@@ -86,7 +87,9 @@ function UsersTable() {
                     })}
                 </tbody>
             </Table>
-
+            <UsersPagination
+                totalPages={0}
+            />
             <UserCreateModal
                 isOpenCreateModal={isOpenCreateModal}
                 setIsOpenCreateModal={setIsOpenCreateModal}
