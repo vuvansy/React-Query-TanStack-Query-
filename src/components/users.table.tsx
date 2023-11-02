@@ -1,11 +1,12 @@
 import Table from 'react-bootstrap/Table';
-import { useState, useEffect } from 'react';
+import { useState, forwardRef } from 'react';
 import Button from 'react-bootstrap/Button';
 import UserCreateModal from './modal/user.create.modal';
 import UserEditModal from './modal/user.edit.modal';
 import UserDeleteModal from './modal/user.delete.modal';
 import UsersPagination from './pagination/users.pagination';
-
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Popover from 'react-bootstrap/Popover';
 
 function UsersTable() {
 
@@ -44,6 +45,23 @@ function UsersTable() {
         setIsOpenDeleteModal(true);
     }
 
+    const PopoverComponent = forwardRef((props: any, ref: any) => {
+        const { id } = props;
+
+        return (
+
+            <Popover ref={ref} {...props}>
+                <Popover.Header as="h3">Detail User</Popover.Header>
+                <Popover.Body>
+                    <div>ID = {id}</div>
+                    <div>Name = ?</div>
+                    <div>Email = ?</div>
+                </Popover.Body>
+            </Popover>
+        )
+    })
+
+
     return (
         <>
             <div style={{ display: "flex", justifyContent: "space-between", margin: "15px 0" }}>
@@ -65,7 +83,13 @@ function UsersTable() {
                     {users?.map(user => {
                         return (
                             <tr key={user.id}>
-                                <td>{user.id}</td>
+                                <OverlayTrigger trigger="click" placement="right"
+                                    rootClose
+                                    overlay={<PopoverComponent id={user.id} />}
+                                >
+                                    <td><a href='#'>{user.id}</a></td>
+                                </OverlayTrigger>
+
                                 <td>{user.name}</td>
                                 <td>{user.email}</td>
                                 <td>
