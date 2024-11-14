@@ -1,14 +1,36 @@
-import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
-import FloatingLabel from 'react-bootstrap/FloatingLabel';
-import Form from 'react-bootstrap/Form';
-import { useState } from 'react';
+import Button from "react-bootstrap/Button";
+import Modal from "react-bootstrap/Modal";
+import FloatingLabel from "react-bootstrap/FloatingLabel";
+import Form from "react-bootstrap/Form";
+import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+
+interface IUser {
+    name: string;
+    email: string;
+}
 
 const UserCreateModal = (props: any) => {
     const { isOpenCreateModal, setIsOpenCreateModal } = props;
 
     const [email, setEmail] = useState<string>("");
     const [name, setName] = useState<string>("");
+
+    const mutation = useMutation({
+        mutationFn: async (payload: IUser) => {
+            const res = await fetch("http://localhost:8000/users", {
+                method: "POST",
+                body: JSON.stringify({
+                    email: payload.email,
+                    name: payload.name,
+                }),
+                headers: {
+                    "Content-Type": " application/json",
+                },
+            });
+            return res.json();
+        },
+    });
 
     const handleSubmit = () => {
         if (!email) {
@@ -20,8 +42,8 @@ const UserCreateModal = (props: any) => {
             return;
         }
         //call api => call redux
-        console.log({ email, name }) //payload
-    }
+        mutation.mutate({ email, name });
+    };
 
     return (
         <>
@@ -33,15 +55,10 @@ const UserCreateModal = (props: any) => {
                 onHide={() => setIsOpenCreateModal(false)}
             >
                 <Modal.Header closeButton>
-                    <Modal.Title>
-                        Add A New User
-                    </Modal.Title>
+                    <Modal.Title>Add A New User</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <FloatingLabel
-                        label="Email"
-                        className="mb-3"
-                    >
+                    <FloatingLabel label="Email" className="mb-3">
                         <Form.Control
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
@@ -58,13 +75,17 @@ const UserCreateModal = (props: any) => {
                 </Modal.Body>
                 <Modal.Footer>
                     <Button
-                        variant='warning'
-                        onClick={() => setIsOpenCreateModal(false)} className='mr-2'>Cancel</Button>
+                        variant="warning"
+                        onClick={() => setIsOpenCreateModal(false)}
+                        className="mr-2"
+                    >
+                        Cancel
+                    </Button>
                     <Button onClick={() => handleSubmit()}>Save</Button>
                 </Modal.Footer>
             </Modal>
         </>
-    )
-}
+    );
+};
 
 export default UserCreateModal;
