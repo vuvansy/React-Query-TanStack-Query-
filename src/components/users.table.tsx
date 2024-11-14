@@ -7,7 +7,7 @@ import UserDeleteModal from "./modal/user.delete.modal";
 import UsersPagination from "./pagination/users.pagination";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Popover from "react-bootstrap/Popover";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 
 interface IUser {
     id: number;
@@ -23,23 +23,10 @@ function UsersTable() {
 
     const [isOpenDeleteModal, setIsOpenDeleteModal] = useState<boolean>(false);
 
-    // const users = [
-    //     {
-    //         "id": 1,
-    //         "name": "Eric",
-    //         "email": "eric@gmail.com"
-    //     },
-    //     {
-    //         "id": 2,
-    //         "name": "Hỏi Dân IT",
-    //         "email": "hoidanit@gmail.com"
-    //     },
-    //     {
-    //         "id": 3,
-    //         "name": "Hỏi Dân IT",
-    //         "email": "admin@gmail.com"
-    //     }
-    // ]
+    const [currentPage, setCurrentPage] = useState<number>(1);
+    const [totalPages, setTotalPages] = useState<number>(1);
+
+    const PAGE_SIZE = 2;
 
     const handleEditUser = (user: any) => {
         setDataUser(user);
@@ -86,9 +73,20 @@ function UsersTable() {
     });
 
     const { isPending, error, data } = useQuery({
-        queryKey: ["fetchUser"],
+        queryKey: ["fetchUser", currentPage],
         queryFn: (): Promise<IUser[]> =>
-            fetch("http://localhost:8000/users").then((res) => res.json()),
+            fetch(
+                `http://localhost:8000/users?_page=${currentPage}&_limit=${PAGE_SIZE}`
+            ).then((res) => {
+                const total_items = +(res.headers?.get("X-Total-Count") ?? 0);
+                const page_size = PAGE_SIZE;
+                const total_pages =
+                    total_items == 0 ? 0 : (total_items - 1) / page_size + 1;
+                setTotalPages(total_pages);
+                return res.json();
+            }),
+        placeholderData: keepPreviousData, //Chờ data mà k cần hiện Loading... lần 2 khi gọi
+        //staleTime: 3 * 1000, //30S
     });
 
     if (isPending) return "Loading...";
@@ -158,7 +156,11 @@ function UsersTable() {
                     })}
                 </tbody>
             </Table>
-            <UsersPagination totalPages={0} />
+            <UsersPagination
+                totalPages={totalPages}
+                currentPage={currentPage}
+                setCurrentPage={setCurrentPage}
+            />
             <UserCreateModal
                 isOpenCreateModal={isOpenCreateModal}
                 setIsOpenCreateModal={setIsOpenCreateModal}

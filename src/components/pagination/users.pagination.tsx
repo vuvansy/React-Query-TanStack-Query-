@@ -1,16 +1,17 @@
-import Pagination from 'react-bootstrap/Pagination';
-import { useState } from 'react';
+import Pagination from "react-bootstrap/Pagination";
+import { useState } from "react";
 
 interface IProps {
     totalPages: number;
+    currentPage: number;
+    setCurrentPage: (v: number) => void;
 }
 const UsersPagination = (props: IProps) => {
-    const [currentPage, setCurrentPage] = useState<number>(1);
-    const { totalPages } = props;
+    const { totalPages, currentPage, setCurrentPage } = props;
 
     return (
         <div style={{ display: "flex", justifyContent: "center" }}>
-            {totalPages > 0 &&
+            {totalPages > 0 && (
                 <Pagination>
                     <Pagination.Prev
                         disabled={currentPage === 1}
@@ -25,20 +26,22 @@ const UsersPagination = (props: IProps) => {
                                 key={i}
                                 onClick={() => setCurrentPage(i + 1)}
                                 active={currentPage === i + 1}
-                            >{i + 1}</Pagination.Item>
-                        )
-                    }
-                    )}
+                            >
+                                {i + 1}
+                            </Pagination.Item>
+                        );
+                    })}
                     <Pagination.Next
                         disabled={currentPage === totalPages}
                         onClick={() => {
                             if (currentPage === totalPages) return;
-                            setCurrentPage(currentPage + 1)
-                        }} />
+                            setCurrentPage(currentPage + 1);
+                        }}
+                    />
                 </Pagination>
-            }
+            )}
         </div>
     );
-}
+};
 
 export default UsersPagination;
