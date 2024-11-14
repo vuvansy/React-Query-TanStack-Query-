@@ -1,11 +1,11 @@
-import Button from "react-bootstrap/Button";
-import Modal from "react-bootstrap/Modal";
-import FloatingLabel from "react-bootstrap/FloatingLabel";
-import Form from "react-bootstrap/Form";
-import { useState, useEffect } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "react-toastify";
-import Spinner from "react-bootstrap/Spinner";
+import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
+import FloatingLabel from 'react-bootstrap/FloatingLabel';
+import Form from 'react-bootstrap/Form';
+import { useState, useEffect } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'react-toastify';
+import Spinner from 'react-bootstrap/Spinner';
 
 interface IUser {
     id: number;
@@ -16,44 +16,42 @@ interface IUser {
 const UserEditModal = (props: any) => {
     const { isOpenUpdateModal, setIsOpenUpdateModal, dataUser } = props;
     const [id, setId] = useState();
-    const queryClient = useQueryClient();
+    const queryClient = useQueryClient()
 
     const [email, setEmail] = useState<string>("");
     const [name, setName] = useState<string>("");
 
     const mutation = useMutation({
         mutationFn: async (payload: IUser) => {
-            const res = await fetch(
-                `http://localhost:8000/users/${payload.id}`,
-                {
-                    method: "PUT",
-                    body: JSON.stringify({
-                        email: payload.email,
-                        name: payload.name,
-                    }),
-                    headers: {
-                        "Content-Type": " application/json",
-                    },
+            const res = await fetch(`http://localhost:8000/users/${payload.id}`, {
+                method: "PUT",
+                body: JSON.stringify({
+                    email: payload.email,
+                    name: payload.name,
+                }),
+                headers: {
+                    "Content-Type": " application/json"
                 }
-            );
-            return res.json();
+            });
+            return res.json()
         },
         onSuccess: (data, variables, context) => {
-            toast("🦄 Wow so easy! Update succeed!");
+            toast('🦄 Wow so easy! Update succeed!');
             setIsOpenUpdateModal(false);
             setEmail("");
             setName("");
-            queryClient.invalidateQueries({ queryKey: ["fetchUser"] });
+            queryClient.invalidateQueries({ queryKey: ['fetchUser'] })
         },
-    });
+    })
 
     useEffect(() => {
         if (dataUser?.id) {
             setId(dataUser?.id);
             setEmail(dataUser?.email);
-            setName(dataUser?.name);
+            setName(dataUser?.name)
         }
-    }, [dataUser]);
+    }, [dataUser])
+
 
     const handleSubmit = () => {
         if (!email) {
@@ -64,8 +62,9 @@ const UserEditModal = (props: any) => {
             alert("name empty");
             return;
         }
-        mutation.mutate({ email, name, id });
-    };
+        if (id)
+            mutation.mutate({ email, name, id })
+    }
 
     return (
         <>
@@ -77,10 +76,15 @@ const UserEditModal = (props: any) => {
                 onHide={() => setIsOpenUpdateModal(false)}
             >
                 <Modal.Header closeButton>
-                    <Modal.Title>Update A User</Modal.Title>
+                    <Modal.Title>
+                        Update A User
+                    </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <FloatingLabel label="Email" className="mb-3">
+                    <FloatingLabel
+                        label="Email"
+                        className="mb-3"
+                    >
                         <Form.Control
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
@@ -96,20 +100,14 @@ const UserEditModal = (props: any) => {
                     </FloatingLabel>
                 </Modal.Body>
                 <Modal.Footer>
-                    {!mutation.isPending ? (
+                    {!mutation.isPending ?
                         <>
                             <Button
-                                variant="warning"
-                                onClick={() => setIsOpenUpdateModal(false)}
-                                className="mr-2"
-                            >
-                                Cancel
-                            </Button>
-                            <Button onClick={() => handleSubmit()}>
-                                Confirm
-                            </Button>
+                                variant='warning'
+                                onClick={() => setIsOpenUpdateModal(false)} className='mr-2'>Cancel</Button>
+                            <Button onClick={() => handleSubmit()}>Confirm</Button>
                         </>
-                    ) : (
+                        :
                         <Button variant="primary" disabled>
                             <Spinner
                                 as="span"
@@ -120,11 +118,11 @@ const UserEditModal = (props: any) => {
                             />
                             <></> Updating...
                         </Button>
-                    )}
+                    }
                 </Modal.Footer>
             </Modal>
         </>
-    );
-};
+    )
+}
 
 export default UserEditModal;
