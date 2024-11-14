@@ -27,7 +27,7 @@ function UsersTable() {
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [totalPages, setTotalPages] = useState<number>(1);
 
-    const PAGE_SIZE = 20;
+    const PAGE_SIZE = 2;
 
     const handleEditUser = (user: any) => {
         setDataUser(user);
