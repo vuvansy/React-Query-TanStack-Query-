@@ -3,6 +3,7 @@ import { Spinner } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import { toast } from "react-toastify";
+import { QUERY_KEY } from "../../config/key";
 
 interface IUser {
     id: number;
@@ -29,7 +30,7 @@ const UserDeleteModal = (props: any) => {
         onSuccess: (data, variables, context) => {
             toast("🦄 Wow so easy! Delete succeed!");
             setIsOpenDeleteModal(false);
-            queryClient.invalidateQueries({ queryKey: ["fetchUser"] });
+            queryClient.invalidateQueries({ queryKey: QUERY_KEY.getAllUser() });
         },
     });
 

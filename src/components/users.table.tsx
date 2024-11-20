@@ -7,8 +7,8 @@ import UserDeleteModal from "./modal/user.delete.modal";
 import UsersPagination from "./pagination/users.pagination";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Popover from "react-bootstrap/Popover";
-import { useQuery, keepPreviousData } from "@tanstack/react-query";
-import { calculatePagesCount } from "../helper";
+import { useQuery } from "@tanstack/react-query";
+import { useFetchUser } from "../config/fetch";
 
 interface IUser {
     id: number;
@@ -25,9 +25,6 @@ function UsersTable() {
     const [isOpenDeleteModal, setIsOpenDeleteModal] = useState<boolean>(false);
 
     const [currentPage, setCurrentPage] = useState<number>(1);
-    const [totalPages, setTotalPages] = useState<number>(1);
-
-    const PAGE_SIZE = 2;
 
     const handleEditUser = (user: any) => {
         setDataUser(user);
@@ -73,19 +70,7 @@ function UsersTable() {
         );
     });
 
-    const { isPending, error, data } = useQuery({
-        queryKey: ["fetchUser", currentPage],
-        queryFn: (): Promise<IUser[]> =>
-            fetch(
-                `http://localhost:8000/users?_page=${currentPage}&_limit=${PAGE_SIZE}`
-            ).then((res) => {
-                const total_items = +(res.headers?.get("X-Total-Count") ?? 0);
-                setTotalPages(calculatePagesCount(PAGE_SIZE, total_items));
-                return res.json();
-            }),
-        placeholderData: keepPreviousData, //Chờ data mà k cần hiện Loading... lần 2 khi gọi
-        //staleTime: 3 * 1000, //30S
-    });
+    const { isPending, error, data, totalPages } = useFetchUser(currentPage);
 
     if (isPending) return "Loading...";
 
